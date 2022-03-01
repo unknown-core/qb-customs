@@ -249,14 +249,16 @@ function InitiateMenus(isMotorcycle, vehicleHealth)
     --#[Main Menu]#--
     createMenu("mainMenu", "Welcome to Benny's Original Motorworks", "Choose a Category")
 
-    for k, v in ipairs(vehicleCustomisation) do
-        local validMods, amountValidMods = CheckValidMods(v.category, v.id)
-
-        if amountValidMods > 0 or v.id == 18 then
-            populateMenu("mainMenu", v.id, v.category, "none")
+    if maxVehiclePerformanceUpgrades ~= -1 then
+        for k, v in ipairs(vehicleCustomisation) do
+            local validMods, amountValidMods = CheckValidMods(v.category, v.id)
+    
+            if amountValidMods > 0 or v.id == 18 then
+                populateMenu("mainMenu", v.id, v.category, "none")
+            end
         end
     end
-
+    
     populateMenu("mainMenu", -1, "Respray", "none")
 
     if not isMotorcycle then
@@ -267,7 +269,12 @@ function InitiateMenus(isMotorcycle, vehicleHealth)
     populateMenu("mainMenu", 22, "Xenons", "none")
     populateMenu("mainMenu", 23, "Wheels", "none")
 
-    populateMenu("mainMenu", 24, "Old Livery", "none")
+    local livCount = GetVehicleLiveryCount(plyVeh)
+    print(livCount)
+    if livCount > 0 then
+        populateMenu("mainMenu", 24, "Old Livery", "none")
+    end
+
     populateMenu("mainMenu", 25, "Plate Index", "none")
     populateMenu("mainMenu", 26, "Vehicle Extras", "none")
 
@@ -446,16 +453,14 @@ function InitiateMenus(isMotorcycle, vehicleHealth)
     finishPopulatingMenu("WindowTintMenu")
 
     --#[Old Livery Menu]#--
-    local livCount = GetVehicleLiveryCount(plyVeh)
     if livCount > 0 then
         local tempOldLivery = GetVehicleLivery(plyVeh)
+        
         createMenu("OldLiveryMenu", "Old Livery Customisation", "Choose a Livery")
-        if GetVehicleClass(plyVeh) ~= 18 then
-            for i=0, GetVehicleLiveryCount(plyVeh)-1 do
-                populateMenu("OldLiveryMenu", i, "Livery", "$100")
-                if tempOldLivery == i then
-                    updateItem2Text("OldLiveryMenu", i, "Installed")
-                end
+        for i=0, GetVehicleLiveryCount(plyVeh)-1 do
+            populateMenu("OldLiveryMenu", i, "Livery", "$100")
+            if tempOldLivery == i then
+                updateItem2Text("OldLiveryMenu", i, "Installed")
             end
         end
         finishPopulatingMenu("OldLiveryMenu")
@@ -473,13 +478,11 @@ function InitiateMenus(isMotorcycle, vehicleHealth)
         "Blue on White #3",
         "North Yankton",
     }
-    if GetVehicleClass(plyVeh) ~= 18 then
-        for i=0, #plateTypes-1 do
-            if i ~= 4 then
-                populateMenu("PlateIndexMenu", i, plateTypes[i+1], "$1000")
-                if tempPlateIndex == i then
-                    updateItem2Text("PlateIndexMenu", i, "Installed")
-                end
+    for i=0, #plateTypes-1 do
+        if i ~= 4 then
+            populateMenu("PlateIndexMenu", i, plateTypes[i+1], "$1000")
+            if tempPlateIndex == i then
+                updateItem2Text("PlateIndexMenu", i, "Installed")
             end
         end
     end
@@ -487,13 +490,11 @@ function InitiateMenus(isMotorcycle, vehicleHealth)
 
     --#[Vehicle Extras Menu]#--
     createMenu("VehicleExtrasMenu", "Vehicle Extras Customisation", "Toggle Extras")
-    if GetVehicleClass(plyVeh) ~= 18 then
-        for i=1, 12 do
-            if DoesExtraExist(plyVeh, i) then
-                populateMenu("VehicleExtrasMenu", i, "Extra "..tostring(i), "Toggle")
-            else
-                populateMenu("VehicleExtrasMenu", i, "No Option", "NONE")
-            end
+    for i=1, 12 do
+        if DoesExtraExist(plyVeh, i) then
+            populateMenu("VehicleExtrasMenu", i, "Extra "..tostring(i), "Toggle")
+        else
+            populateMenu("VehicleExtrasMenu", i, "No Option", "NONE")
         end
     end
     finishPopulatingMenu("VehicleExtrasMenu")
@@ -797,28 +798,24 @@ function MenuManager(state)
                 elseif currentMenu == "OldLiveryMenu" then
                     local plyPed = PlayerPedId()
                     local plyVeh = GetVehiclePedIsIn(plyPed, false)
-                    if GetVehicleClass(plyVeh) ~= 18 then
-                        if AttemptPurchase("oldlivery") then
-                            ApplyOldLivery(currentMenuItemID)
-                            playSoundEffect("wrench", 0.4)
-                            updateItem2Text(currentMenu, currentMenuItemID, "Installed")
-                            updateMenuStatus("Purchased")
-                        else
-                            updateMenuStatus("Not Enough Money")
-                        end
+                    if AttemptPurchase("oldlivery") then
+                        ApplyOldLivery(currentMenuItemID)
+                        playSoundEffect("wrench", 0.4)
+                        updateItem2Text(currentMenu, currentMenuItemID, "Installed")
+                        updateMenuStatus("Purchased")
+                    else
+                        updateMenuStatus("Not Enough Money")
                     end
                 elseif currentMenu == "PlateIndexMenu" then
                     local plyPed = PlayerPedId()
                     local plyVeh = GetVehiclePedIsIn(plyPed, false)
-                    if GetVehicleClass(plyVeh) ~= 18 then
-                        if AttemptPurchase("plateindex") then
-                            ApplyPlateIndex(currentMenuItemID)
-                            playSoundEffect("wrench", 0.4)
-                            updateItem2Text(currentMenu, currentMenuItemID, "Installed")
-                            updateMenuStatus("Purchased")
-                        else
-                            updateMenuStatus("Not Enough Money")
-                        end
+                    if AttemptPurchase("plateindex") then
+                        ApplyPlateIndex(currentMenuItemID)
+                        playSoundEffect("wrench", 0.4)
+                        updateItem2Text(currentMenu, currentMenuItemID, "Installed")
+                        updateMenuStatus("Purchased")
+                    else
+                        updateMenuStatus("Not Enough Money")
                     end
                 elseif currentMenu == "VehicleExtrasMenu" then
                     ApplyExtra(currentMenuItemID)
@@ -899,10 +896,10 @@ function MenuManager(state)
 
                 local plyPed = PlayerPedId()
                 local plyVeh = GetVehiclePedIsIn(plyPed, false)
-                if currentMenu == "OldLiveryMenu" and GetVehicleClass(plyVeh) ~= 18 then
+                if currentMenu == "OldLiveryMenu" then
                     RestoreOldLivery()
                 end
-                if currentMenu == "PlateIndexMenu" and GetVehicleClass(plyVeh) ~= 18 then
+                if currentMenu == "PlateIndexMenu" then
                     RestorePlateIndex()
                 end
 

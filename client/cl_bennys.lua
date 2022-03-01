@@ -90,6 +90,9 @@ function RepairVehicle()
 	SetVehicleDirtLevel(plyVeh, 0.0)
     SetVehiclePetrolTankHealth(plyVeh, 4000.0)
     SetVehicleFuelLevel(plyVeh, getFuel)
+
+    for i = 0,5 do SetVehicleTyreFixed(vehicle, i) end
+
     TriggerEvent('veh.randomDegredation',10,plyVeh,3)
 end
 
@@ -792,13 +795,13 @@ CreateThread(function()
                         if not isPlyInBennys then
                             Draw3DText(v.coords.x, v.coords.y, v.coords.z + 0.5, "[Press ~p~E~w~ - Enter Benny's Motorworks]", 255, 255, 255, 255, 4, 0.45, true, true, true, true, 0, 0, 0, 0, 55)
                             if IsControlJustReleased(1, 38) then
-				if GetPedInVehicleSeat(GetVehiclePedIsIn(PlayerPedId()), -1) == PlayerPedId() then
-					if (v.useJob and isAuthorized((QBCore.Functions.GetPlayerData().job.name), k)) or not v.useJob then
-					    TriggerEvent('event:control:bennys', k)
-					else
-					    QBCore.Functions.Notify("You are not authorized", "error")
-					end
-				end
+                                if GetPedInVehicleSeat(GetVehiclePedIsIn(PlayerPedId()), -1) == PlayerPedId() then
+                                    if (v.useJob and isAuthorized((QBCore.Functions.GetPlayerData().job.name), k)) or not v.useJob then
+                                        TriggerEvent('event:control:bennys', k)
+                                    else
+                                        QBCore.Functions.Notify("You are not authorized", "error")
+                                    end
+                                end
                             end
                         else
                             disableControls()
