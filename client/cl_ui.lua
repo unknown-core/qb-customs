@@ -1,4 +1,6 @@
---#[Local Variable]#--
+-----------------------
+----   Variables   ----
+-----------------------
 local currentMenuItemID = 0
 local currentMenuItem = ""
 local currentMenuItem2 = ""
@@ -10,7 +12,10 @@ local currentWheelCategory = 0
 local currentNeonSide = 0
 local menuStructure = {}
 
---#[Local Functions]#--
+-----------------------
+----   Functions   ----
+-----------------------
+--#[Local Variable]#--
 local function roundNum(num, numDecimalPlaces)
     return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
 end
@@ -199,84 +204,61 @@ local function updateCurrentMenuItemID(id, item, item2)
     end
 end
 
---#[Global Functions]#--
-function Draw3DText(x, y, z, str, r, g, b, a, font, scaleSize, enableProportional, enableCentre, enableOutline, enableShadow, sDist, sR, sG, sB, sA)
-    local onScreen, worldX, worldY = World3dToScreen2d(x, y, z)
-    local gameplayCamX, gameplayCamY, gameplayCamZ = table.unpack(GetGameplayCamCoords())
-
-    if onScreen then
-        SetTextScale(1.0, scaleSize)
-        SetTextFont(font)
-        SetTextColour(r, g, b, a)
-        SetTextEdge(2, 0, 0, 0, 150)
-
-        if enableProportional then
-            SetTextProportional(1)
-        end
-
-        if enableOutline then
-            SetTextOutline()
-        end
-
-        if enableShadow then
-            SetTextDropshadow(sDist, sR, sG, sB, sA)
-            SetTextDropShadow()
-        end
-
-        if enableCentre then
-            SetTextCentre(1)
-        end
-
-        SetTextEntry("STRING")
-        AddTextComponentString(str)
-        DrawText(worldX, worldY)
-    end
-end
-
-function InitiateMenus(isMotorcycle, vehicleHealth)
+function InitiateMenus(isMotorcycle, vehicleHealth, categories, welcomeLabel)
     local plyPed = PlayerPedId()
     local plyVeh = GetVehiclePedIsIn(plyPed, false)
     --#[Repair Menu]#--
-    if vehicleHealth < 1000.0 then
+    if vehicleHealth < 1000.0 and categories.repair then
         local repairCost = math.ceil(1000 - vehicleHealth)
 
-        TriggerServerEvent("qb-customs:updateRepairCost", repairCost)
-        createMenu("repairMenu", "Welcome to Benny's Original Motorworks", "Repair Vehicle")
+        TriggerServerEvent("qb-customs:client:updateRepairCost", repairCost)
+        createMenu("repairMenu", welcomeLabel, "Repair Vehicle")
         populateMenu("repairMenu", -1, "Repair", "$" .. repairCost)
         finishPopulatingMenu("repairMenu")
     end
 
     --#[Main Menu]#--
-    createMenu("mainMenu", "Welcome to Benny's Original Motorworks", "Choose a Category")
+    createMenu("mainMenu", welcomeLabel, "Choose a Category")
 
     if maxVehiclePerformanceUpgrades ~= -1 then
         for k, v in ipairs(vehicleCustomisation) do
             local validMods, amountValidMods = CheckValidMods(v.category, v.id)
     
-            if amountValidMods > 0 or v.id == 18 then
-                populateMenu("mainMenu", v.id, v.category, "none")
+            if amountValidMods > 0 or v.id == 18 or v.id == 48 then
+                if (v.id == 11 or v.id == 12 or v.id == 13 or v.id == 15 or v.id == 16) and categories.mods then
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                elseif v.id == 14 and categories.horn then
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                elseif v.id == 16 and categories.armor then
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                elseif v.id == 18 and categories.turbo then
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                elseif v.id == 48 and categories.respray then
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                else
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                end
             end
         end
     end
     
-    populateMenu("mainMenu", -1, "Respray", "none")
+    if categories.respray then populateMenu("mainMenu", -1, "Respray", "none") end
 
     if not isMotorcycle then
-        populateMenu("mainMenu", -2, "Window Tint", "none")
-        populateMenu("mainMenu", -3, "Neons", "none")
+        if categories.tint then populateMenu("mainMenu", -2, "Window Tint", "none") end
+        if categories.neons then populateMenu("mainMenu", -3, "Neons", "none") end
     end
 
-    populateMenu("mainMenu", 22, "Xenons", "none")
-    populateMenu("mainMenu", 23, "Wheels", "none")
+    if categories.xenons then populateMenu("mainMenu", 22, "Xenons", "none") end
+    if categories.wheels then populateMenu("mainMenu", 23, "Wheels", "none") end
 
     local livCount = GetVehicleLiveryCount(plyVeh)
-    print(livCount)
-    if livCount > 0 then
+    if livCount > 0 and categories.liveries then
         populateMenu("mainMenu", 24, "Old Livery", "none")
     end
 
-    populateMenu("mainMenu", 25, "Plate Index", "none")
-    populateMenu("mainMenu", 26, "Vehicle Extras", "none")
+    if categories.plate then populateMenu("mainMenu", 25, "Plate Index", "none") end
+    if categories.extras then populateMenu("mainMenu", 26, "Vehicle Extras", "none") end
 
     finishPopulatingMenu("mainMenu")
 
@@ -455,9 +437,8 @@ function InitiateMenus(isMotorcycle, vehicleHealth)
     --#[Old Livery Menu]#--
     if livCount > 0 then
         local tempOldLivery = GetVehicleLivery(plyVeh)
-        
         createMenu("OldLiveryMenu", "Old Livery Customisation", "Choose a Livery")
-        for i=0, GetVehicleLiveryCount(plyVeh)-1 do
+        for i=0, livCount-1 do
             populateMenu("OldLiveryMenu", i, "Livery", "$100")
             if tempOldLivery == i then
                 updateItem2Text("OldLiveryMenu", i, "Installed")
@@ -953,11 +934,16 @@ function MenuScrollFunctionality(direction)
     scrollMenuFunctionality(direction, currentMenu)
 end
 
---#[NUI Callbacks]#--
+-----------------------
+----   Threads     ----
+-----------------------
+
+-----------------------
+---- Client Events ----
+-----------------------
+
 RegisterNUICallback("selectedItem", function(data, cb)
     updateCurrentMenuItemID(tonumber(data.id), data.item, data.item2)
-
-    --print("Current Selected Item: " .. currentMenuItemID)
 
     cb("ok")
 end)
