@@ -81,7 +81,8 @@ vehicleWheelOptions = {
     {category = "BennysWheel", id = 8, wheelID = 23},
     {category = "BespokeWheel", id = 9, wheelID = 23},
     {category = "Dragster", id = 10, wheelID = 23},
-    {category = "Street", id = 11, wheelID = 23}
+    {category = "Street", id = 11, wheelID = 23},
+    {category = "Rally", id = 12, wheelID = 23},
 }
 
 -- TIRE SMOKE
