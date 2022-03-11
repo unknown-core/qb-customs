@@ -158,11 +158,7 @@ function GetCurrentCustomWheelState()
     local plyVeh = GetVehiclePedIsIn(plyPed, false)
     local state = GetVehicleModVariation(plyVeh, 23)
 
-    if state then
-        return 1
-    else
-        return 0
-    end
+    return state and 1 or 0
 end
 
 function GetOriginalWheel()
@@ -193,11 +189,7 @@ function GetCurrentNeonState(id)
     local plyVeh = GetVehiclePedIsIn(plyPed, false)
     local isEnabled = IsVehicleNeonLightEnabled(plyVeh, id)
 
-    if isEnabled then
-        return 1
-    else
-        return 0
-    end
+    return isEnabled and 1 or 0
 end
 
 function GetCurrentNeonColour()
@@ -213,11 +205,7 @@ function GetCurrentXenonState()
     local plyVeh = GetVehiclePedIsIn(plyPed, false)
     local isEnabled = IsToggleModOn(plyVeh, 22)
 
-    if isEnabled then
-        return 1
-    else
-        return 0
-    end
+    return isEnabled and 1 or 0
 end
 
 function GetCurrentXenonColour()
@@ -232,11 +220,7 @@ function GetCurrentTurboState()
     local plyVeh = GetVehiclePedIsIn(plyPed, false)
     local isEnabled = IsToggleModOn(plyVeh, 18)
 
-    if isEnabled then
-        return 1
-    else
-        return 0
-    end
+    return isEnabled and 1 or 0
 end
 
 function GetCurrentExtraState(extra)
