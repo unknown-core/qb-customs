@@ -860,7 +860,7 @@ exports('GetCustomsData', function() if next(CustomsData) ~= nil then return Cus
 
 -- Location Creation
 CreateThread(function()
-    while not PlayerData.job do Wait(2500) end 
+    while not PlayerData.job do Wait(2500) end
     for location, data in pairs(Config.Locations) do
         -- PolyZone + Drawtext + Locations Management
         for i, spot in ipairs(data.zones) do
@@ -871,7 +871,6 @@ CreateThread(function()
                 heading = spot.heading,
                 minZ = spot.minZ,
                 maxZ = spot.maxZ,
-                data = { name = garage }
             })
 
             newSpot:onPlayerInOut(function(isPointInside, point)
@@ -883,9 +882,10 @@ CreateThread(function()
                 local allowedGang = AllowGang(restrictions, PlayerData.gang.name)
                 local allowedClass = AllowVehicleClass(restrictions, GetVehiclePedIsIn(PlayerPedId(), false))
 
-                if isPointInside and isEnabled and allowedJob and allowedGang and allowedClass then 
+                if isPointInside and isEnabled and allowedJob and allowedGang and allowedClass then
                     CustomsData = {
                         ['location'] = location,
+                        ['spot'] = _name,
                         ['coords'] = vector3(spot.coords.x, spot.coords.y, spot.coords.z),
                         ['heading'] = spot.heading
                     }
