@@ -853,6 +853,12 @@ function DisableControls()
     end)
 end
 
+function GetLocations()
+    QBCore.Functions.TriggerCallback("qb-customs:server:GetLocations", function(locations)
+        Config.Locations = locations
+    end)
+end
+
 exports('GetCustomsData', function() if next(CustomsData) ~= nil then return CustomsData else return nil end end)
 -----------------------
 ----   Threads     ----
@@ -908,9 +914,9 @@ end)
 -----------------------
 
 AddEventHandler('onResourceStart', function(resourceName)
-	if resourceName == GetCurrentResourceName() and QBCore.Functions.GetPlayerData() == {} then
-		PlayerData = QBCore.Functions.GetPlayerData()
-	end
+    if resourceName == GetCurrentResourceName() and QBCore.Functions.GetPlayerData() ~= {} then
+        GetLocations()
+    end
 end)
 
 AddEventHandler("onResourceStop", function(resource)
@@ -921,9 +927,7 @@ end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     PlayerData = QBCore.Functions.GetPlayerData()
-    QBCore.Functions.TriggerCallback("inventory:server:GetCurrentDrops", function(locations)
-        Config.Locations = locations
-    end)
+    GetLocations()
 end)
 
 RegisterNetEvent('QBCore:Client:OnGangUpdate', function(gang)
