@@ -31,6 +31,7 @@ local originalXenonState = nil
 local originalTurboState = nil
 local attemptingPurchase = false
 local isPurchaseSuccessful = false
+local radialMenuItemId = nil
 
 -----------------------
 ----   Functions   ----
@@ -893,9 +894,19 @@ CreateThread(function()
                         ['heading'] = spot.heading
                     }
                     exports['qb-core']:DrawText(data.drawtextui.text, 'left')
+                    local customsMenu = {
+                        id = 'customs',
+                        title = 'Enter Customs',
+                        icon = 'wrench',
+                        type = 'client',
+                        event = 'qb-customs:client:EnterCustoms',
+                        shouldClose = true
+                    }
+                    radialMenuItemId = exports['qb-radialmenu']:AddOption(customsMenu, radialMenuItemId)
                 elseif CustomsData['location'] == location and CustomsData['spot'] == _name then
                     CustomsData = {}
                     exports['qb-core']:HideText()
+                    exports['qb-radialmenu']:RemoveOption(radialMenuItemId)
                 end
             end)
         end
@@ -950,7 +961,6 @@ RegisterNetEvent("qb-customs:client:purchaseFailed", function()
     attemptingPurchase = false
     QBCore.Functions.Notify("Not enough money", "error")
 end)
-
 
 RegisterNetEvent('qb-customs:client:EnterCustoms', function(override)
     if not override.coords or not override.heading then override = nil end
