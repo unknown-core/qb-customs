@@ -129,9 +129,7 @@ function RepairVehicle()
     SetVehiclePetrolTankHealth(plyVeh, 4000.0)
     SetVehicleFuelLevel(plyVeh, getFuel)
 
-    for i = 0,5 do SetVehicleTyreFixed(vehicle, i) end
-
-    TriggerEvent('veh.randomDegredation',10,plyVeh,3)
+    for i = 0,5 do SetVehicleTyreFixed(plyVeh, i) end
 end
 
 function GetCurrentMod(id)
@@ -694,7 +692,6 @@ function ApplyNeonColour(r, g, b)
     originalNeonColourB = b
 
     SetVehicleNeonLightsColour(plyVeh, r, g, b)
-    originalXenonState = state
 end
 
 function ApplyXenonLights(category, state)
