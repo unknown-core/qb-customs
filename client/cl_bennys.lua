@@ -902,7 +902,7 @@ CreateThread(function()
                         event = 'qb-customs:client:EnterCustoms',
                         shouldClose = true
                     }
-                    radialMenuItemId = exports['qb-radialmenu']:AddOption(customsMenu, radialMenuItemId)
+                    radialMenuItemId = exports['qb-radialmenu']:AddOption(customsMenu)
                 elseif CustomsData['location'] == location and CustomsData['spot'] == _name then
                     CustomsData = {}
                     exports['qb-core']:HideText()
