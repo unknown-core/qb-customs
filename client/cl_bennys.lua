@@ -749,20 +749,53 @@ function ExitBennys()
         DestroyMenus()
     end)
 
+    SetupInteraction()
+
     isPlyInBennys = false
 end
 
 
 function EnterLocation(override)
+    local locationData = Config.Locations[CustomsData.location]
+    local categories = (override and override.categories) or {
+        repair = false,
+        mods = false,
+        armor = false,
+        respray = false,
+        liveries = false,
+        wheels = false,
+        tint = false,
+        plate = false,
+        extras = false,
+        neons = false,
+        xenons = false,
+        horn = false,
+        turbo = false,
+    }
+
+    local canEnter = false
+    if next(CustomsData) then
+        for k,v in pairs(locationData.categories) do
+            if not canEnter and v then canEnter = true end
+            categories[k] = v
+        end
+    end
+
+    if not canEnter then 
+        QBCore.Functions.Notify('You cant do anything here!')
+        ExitBennys()
+        return
+    end
+    if Config.UseRadial then 
+        exports['qb-radialmenu']:RemoveOption(radialMenuItemId) 
+        radialMenuItemId = nil
+    end
+
+    exports['qb-core']:HideText()
+
     local plyPed = PlayerPedId()
     local plyVeh = GetVehiclePedIsIn(plyPed, false)
     local isMotorcycle = false
-
-    SetVehicleModKit(plyVeh, 0)
-    SetEntityCoords(plyVeh, ((override and override.coords) or CustomsData.coords))
-    SetEntityHeading(plyVeh, ((override and override.heading) or CustomsData.heading))
-    FreezeEntityPosition(plyVeh, true)
-    SetEntityCollision(plyVeh, false, true)
 
     if GetVehicleClass(plyVeh) == 8 then --Motorcycle
         isMotorcycle = true
@@ -770,31 +803,13 @@ function EnterLocation(override)
         isMotorcycle = false
     end
 
-    local locationData = Config.Locations[CustomsData.location]
-    local categories = (override and override.categories) or {
-        repair = false, 
-        mods = false, 
-        armor = false,
-        respray = false, 
-        liveries = false,
-        wheels = false, 
-        tint = false, 
-        plate = false, 
-        extras = false, 
-        neons = false, 
-        xenons = false, 
-        horn = false, 
-        turbo = false,
-    }
-
-    if next(CustomsData) then
-        for k,v in pairs(locationData.categories) do
-            categories[k] = v
-        end
-    end
+    SetVehicleModKit(plyVeh, 0)
+    SetEntityCoords(plyVeh, ((override and override.coords) or CustomsData.coords))
+    SetEntityHeading(plyVeh, ((override and override.heading) or CustomsData.heading))
+    FreezeEntityPosition(plyVeh, true)
+    SetEntityCollision(plyVeh, false, true)
 
     local welcomeLabel = (locationData and locationData.settings.welcomeLabel) or "Welcome to Benny's Motorworks!"
-
     InitiateMenus(isMotorcycle, GetVehicleBodyHealth(plyVeh), categories, welcomeLabel)
 
     SetTimeout(100, function()
@@ -809,6 +824,7 @@ function EnterLocation(override)
     end)
 
     isPlyInBennys = true
+    DisableControls()
 end
 
 
@@ -825,22 +841,22 @@ function DisableControls()
             DisableControlAction(1, 34, true) --Key: A
             DisableControlAction(1, 35, true) --Key: D
             DisableControlAction(1, 75, true) --Key: F (veh_exit)
-        
+
             if IsDisabledControlJustReleased(1, 172) then --Key: Arrow Up
                 MenuScrollFunctionality("up")
                 PlaySoundFrontend(-1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1)
             end
-        
+
             if IsDisabledControlJustReleased(1, 173) then --Key: Arrow Down
                 MenuScrollFunctionality("down")
                 PlaySoundFrontend(-1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1)
             end
-        
+
             if IsDisabledControlJustReleased(1, 176) then --Key: Enter
                 MenuManager(true)
                 PlaySoundFrontend(-1, "OK", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1)
             end
-        
+
             if IsDisabledControlJustReleased(1, 177) then --Key: Backspace
                 MenuManager(false)
                 PlaySoundFrontend(-1, "NO", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1)
@@ -855,6 +871,62 @@ function GetLocations()
     QBCore.Functions.TriggerCallback("qb-customs:server:GetLocations", function(locations)
         Config.Locations = locations
     end)
+end
+
+function CheckForKeypress()
+    if next(CustomsData) then
+        CreateThread(function()
+            while next(CustomsData) and not isPlyInBennys do
+                if IsControlJustReleased(0, 38) and CheckRestrictions(CustomsData.location) then EnterLocation() return end
+                Wait(0)
+            end
+        end)
+    end
+end
+
+-- If a player isnt in a vehicle, when they enter the zone, the closet vehicle is checked
+-- The vehicle is checked if it has collision disabled and nobody in the driver seat
+-- If so it will set the collision to true and unfreeze the entity =D
+function CheckForGhostVehicle()
+    if GetVehiclePedIsIn(PlayerPedId(), false) ~= 0 then return end
+    local closestVehicle, closestDistance = QBCore.Functions.GetClosestVehicle(GetEntityCoords(PlayerPedId()))
+    if closestVehicle ~= -1 and closestDistance < 10.0 and GetEntityCollisionDisabled(closestVehicle) and GetPedInVehicleSeat(closestVehicle, -1) == 0 then
+        FreezeEntityPosition(closestVehicle, false)
+        SetEntityCollision(closestVehicle, true, true)
+    end
+end
+
+function CheckRestrictions(location)
+    local PlayerPed = PlayerPedId()
+    local _location = Config.Locations[location]
+    local restrictions = _location.restrictions
+
+    local isEnabled = _location.settings.enabled
+    local vehicle = GetVehiclePedIsIn(PlayerPed, false)
+    local allowedJob = AllowJob(restrictions, PlayerData.job.name)
+    local allowedGang = AllowGang(restrictions, PlayerData.gang.name)
+    local allowedClass = AllowVehicleClass(restrictions, GetVehiclePedIsIn(PlayerPed, false))
+    return isEnabled and vehicle ~= 0 and allowedJob and allowedGang and allowedClass
+end
+
+function SetupInteraction()
+    local text = CustomsData.drawtextui
+    if Config.UseRadial then
+        if not radialMenuItemId then
+            radialMenuItemId = exports['qb-radialmenu']:AddOption({
+                id = 'customs',
+                title = 'Enter Customs',
+                icon = 'wrench',
+                type = 'client',
+                event = 'qb-customs:client:EnterCustoms',
+                shouldClose = true
+            })
+        end
+    else
+        text = '[E] '..text
+        CheckForKeypress()
+    end
+    exports['qb-core']:DrawText(text, 'left')
 end
 
 exports('GetCustomsData', function() if next(CustomsData) ~= nil then return CustomsData else return nil end end)
@@ -878,35 +950,24 @@ CreateThread(function()
             })
 
             newSpot:onPlayerInOut(function(isPointInside, point)
-                local _location = Config.Locations[location]
-                local restrictions = _location.restrictions
-
-                local isEnabled = _location.settings.enabled
-                local allowedJob = AllowJob(restrictions, PlayerData.job.name)
-                local allowedGang = AllowGang(restrictions, PlayerData.gang.name)
-                local allowedClass = AllowVehicleClass(restrictions, GetVehiclePedIsIn(PlayerPedId(), false))
-
-                if isPointInside and isEnabled and allowedJob and allowedGang and allowedClass then
+                if isPointInside then
                     CustomsData = {
                         ['location'] = location,
                         ['spot'] = _name,
                         ['coords'] = vector3(spot.coords.x, spot.coords.y, spot.coords.z),
-                        ['heading'] = spot.heading
+                        ['heading'] = spot.heading,
+                        ['drawtextui'] = data.drawtextui.text,
                     }
-                    exports['qb-core']:DrawText(data.drawtextui.text, 'left')
-                    local customsMenu = {
-                        id = 'customs',
-                        title = 'Enter Customs',
-                        icon = 'wrench',
-                        type = 'client',
-                        event = 'qb-customs:client:EnterCustoms',
-                        shouldClose = true
-                    }
-                    radialMenuItemId = exports['qb-radialmenu']:AddOption(customsMenu)
+                    SetupInteraction()
+                    CheckForGhostVehicle()
                 elseif CustomsData['location'] == location and CustomsData['spot'] == _name then
                     CustomsData = {}
+                    if Config.UseRadial then 
+                        exports['qb-radialmenu']:RemoveOption(radialMenuItemId) 
+                        radialMenuItemId = nil
+                    end
+                    
                     exports['qb-core']:HideText()
-                    exports['qb-radialmenu']:RemoveOption(radialMenuItemId)
                 end
             end)
         end
@@ -962,10 +1023,10 @@ RegisterNetEvent("qb-customs:client:purchaseFailed", function()
     QBCore.Functions.Notify("Not enough money", "error")
 end)
 
-RegisterNetEvent('qb-customs:client:EnterCustoms', function(override)
+RegisterNetEvent('qb-customs:client:EnterCustoms', function(override, checkRestrictions)
     if not override.coords or not override.heading then override = nil end
     if not IsPedInAnyVehicle(PlayerPedId(), false) or isPlyInBennys or (not next(CustomsData) and not override) then return end
+    if checkRestrictions and next(CustomsData) and not CheckRestrictions(CustomsData.location) then return end
 
     EnterLocation(override)
-    DisableControls()
 end)

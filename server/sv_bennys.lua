@@ -2,6 +2,7 @@
 ----   Variables   ----
 -----------------------
 local QBCore = exports['qb-core']:GetCoreObject()
+local RepairCosts = {}
 
 -----------------------
 ----   Functions   ----
@@ -10,9 +11,7 @@ local QBCore = exports['qb-core']:GetCoreObject()
 local function IsVehicleOwned(plate)
     local retval = false
     local result = MySQL.Sync.fetchScalar('SELECT plate FROM player_vehicles WHERE plate = ?', {plate})
-    if result then
-        retval = true
-    end
+    if result then retval = true end
     return retval
 end
 
@@ -24,6 +23,11 @@ end
 ---- Server Events ----
 -----------------------
 
+AddEventHandler("playerDropped", function()
+	local source = source
+    RepairCosts[source] = nil
+end)
+
 RegisterNetEvent('qb-customs:server:attemptPurchase', function(type, upgradeLevel)
     local source = source
     local Player = QBCore.Functions.GetPlayer(source)
@@ -31,10 +35,11 @@ RegisterNetEvent('qb-customs:server:attemptPurchase', function(type, upgradeLeve
     local balance = Player.Functions.GetMoney(moneyType)
 
     if type == "repair" then
+        local repairCost = RepairCosts[source] or 600
         moneyType = Config.RepairMoneyType
         balance = Player.Functions.GetMoney(moneyType)
-        if balance >= vehicleBaseRepairCost then
-            Player.Functions.RemoveMoney(moneyType, vehicleBaseRepairCost, "bennys")
+        if balance >= repairCost then
+            Player.Functions.RemoveMoney(moneyType, repairCost, "bennys")
             TriggerClientEvent('qb-customs:client:purchaseSuccessful', source)
         else
             TriggerClientEvent('qb-customs:client:purchaseFailed', source)
@@ -57,11 +62,11 @@ RegisterNetEvent('qb-customs:server:attemptPurchase', function(type, upgradeLeve
 end)
 
 RegisterNetEvent('qb-customs:server:updateRepairCost', function(cost)
-    vehicleBaseRepairCost = cost
+    local source = source
+    RepairCosts[source] = cost
 end)
 
 RegisterNetEvent("qb-customs:server:updateVehicle", function(myCar)
-    local src = source
     if IsVehicleOwned(myCar.plate) then
         MySQL.Async.execute('UPDATE player_vehicles SET mods = ? WHERE plate = ?', {json.encode(myCar), myCar.plate})
     end

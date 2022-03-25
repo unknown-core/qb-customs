@@ -211,7 +211,7 @@ function InitiateMenus(isMotorcycle, vehicleHealth, categories, welcomeLabel)
     if vehicleHealth < 1000.0 and categories.repair then
         local repairCost = math.ceil(1000 - vehicleHealth)
 
-        TriggerServerEvent("qb-customs:client:updateRepairCost", repairCost)
+        TriggerServerEvent("qb-customs:server:updateRepairCost", repairCost)
         createMenu("repairMenu", welcomeLabel, "Repair Vehicle")
         populateMenu("repairMenu", -1, "Repair", "$" .. repairCost)
         finishPopulatingMenu("repairMenu")
@@ -220,28 +220,32 @@ function InitiateMenus(isMotorcycle, vehicleHealth, categories, welcomeLabel)
     --#[Main Menu]#--
     createMenu("mainMenu", welcomeLabel, "Choose a Category")
 
-    if maxVehiclePerformanceUpgrades ~= -1 then
-        for k, v in ipairs(vehicleCustomisation) do
-            local validMods, amountValidMods = CheckValidMods(v.category, v.id)
-    
-            if amountValidMods > 0 or v.id == 18 or v.id == 48 then
-                if (v.id == 11 or v.id == 12 or v.id == 13 or v.id == 15 or v.id == 16) and categories.mods then
-                    populateMenu("mainMenu", v.id, v.category, "none")
-                elseif v.id == 14 and categories.horn then
-                    populateMenu("mainMenu", v.id, v.category, "none")
-                elseif v.id == 16 and categories.armor then
-                    populateMenu("mainMenu", v.id, v.category, "none")
-                elseif v.id == 18 and categories.turbo then
-                    populateMenu("mainMenu", v.id, v.category, "none")
-                elseif v.id == 48 and categories.respray then
-                    populateMenu("mainMenu", v.id, v.category, "none")
-                else
+    for _, v in ipairs(vehicleCustomisation) do
+        local _, amountValidMods = CheckValidMods(v.category, v.id)
+        
+        if amountValidMods > 0 or v.id == 18 then
+            if (v.id == 11 or v.id == 12 or v.id == 13 or v.id == 15 or v.id == 16) then
+                if categories.mods and maxVehiclePerformanceUpgrades ~= -1 then
                     populateMenu("mainMenu", v.id, v.category, "none")
                 end
+            elseif v.id == 14 then
+                if categories.horns then
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                end
+            elseif v.id == 18 then
+                if categories.turbo then
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                end
+            elseif v.id == 48 then
+                if categories.liveries then
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                end
+            else
+                populateMenu("mainMenu", v.id, v.category, "none")
             end
         end
     end
-    
+
     if categories.respray then populateMenu("mainMenu", -1, "Respray", "none") end
 
     if not isMotorcycle then
@@ -460,8 +464,8 @@ function InitiateMenus(isMotorcycle, vehicleHealth, categories, welcomeLabel)
         "North Yankton",
     }
     for i=0, #plateTypes-1 do
-        if i ~= 4 then
-            populateMenu("PlateIndexMenu", i, plateTypes[i+1], "$1000")
+        if i ~= 4 or (i == 4 and GetVehicleClass(plyVeh) == 18) or Config.allowGovPlateIndex then
+            populateMenu("PlateIndexMenu", i, plateTypes[i+1], "$"..vehicleCustomisationPrices.plateindex.price)
             if tempPlateIndex == i then
                 updateItem2Text("PlateIndexMenu", i, "Installed")
             end
