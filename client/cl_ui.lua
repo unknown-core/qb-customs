@@ -224,8 +224,12 @@ function InitiateMenus(isMotorcycle, vehicleHealth, categories, welcomeLabel)
         local _, amountValidMods = CheckValidMods(v.category, v.id)
         
         if amountValidMods > 0 or v.id == 18 then
-            if (v.id == 11 or v.id == 12 or v.id == 13 or v.id == 15 or v.id == 16) then
+            if (v.id == 11 or v.id == 12 or v.id == 13 or v.id == 15) then
                 if categories.mods and maxVehiclePerformanceUpgrades ~= -1 then
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                end
+            elseif v.id == 16 then
+                if categories.armor then
                     populateMenu("mainMenu", v.id, v.category, "none")
                 end
             elseif v.id == 14 then
