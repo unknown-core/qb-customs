@@ -219,7 +219,7 @@ function GetCurrentTurboState()
     local plyVeh = GetVehiclePedIsIn(plyPed, false)
     local isEnabled = IsToggleModOn(plyVeh, 18)
 
-    return isEnabled and 1 or 0
+    return isEnabled and 0 or -1
 end
 
 function GetCurrentExtraState(extra)

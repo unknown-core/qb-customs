@@ -44,7 +44,7 @@ RegisterNetEvent('qb-customs:server:attemptPurchase', function(type, upgradeLeve
         else
             TriggerClientEvent('qb-customs:client:purchaseFailed', source)
         end
-    elseif type == "performance" then
+    elseif type == "performance" or type == "turbo" then
         if balance >= vehicleCustomisationPrices[type].prices[upgradeLevel] then
             TriggerClientEvent('qb-customs:client:purchaseSuccessful', source)
             Player.Functions.RemoveMoney(moneyType, vehicleCustomisationPrices[type].prices[upgradeLevel], "bennys")
