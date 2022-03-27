@@ -749,7 +749,9 @@ function ExitBennys()
         DestroyMenus()
     end)
 
-    SetupInteraction()
+    if next(CustomsData) then
+        SetupInteraction()
+    end
 
     isPlyInBennys = false
 end
@@ -779,7 +781,7 @@ function EnterLocation(override)
             if not canEnter and v then canEnter = true end
             categories[k] = v
         end
-    end
+    elseif override then canEnter = true end
 
     if not canEnter then 
         QBCore.Functions.Notify('You cant do anything here!')
