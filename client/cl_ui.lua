@@ -224,8 +224,12 @@ function InitiateMenus(isMotorcycle, vehicleHealth, categories, welcomeLabel)
         local _, amountValidMods = CheckValidMods(v.category, v.id)
         
         if amountValidMods > 0 or v.id == 18 then
-            if (v.id == 11 or v.id == 12 or v.id == 13 or v.id == 15 or v.id == 16) then
+            if (v.id == 11 or v.id == 12 or v.id == 13 or v.id == 15) then
                 if categories.mods and maxVehiclePerformanceUpgrades ~= -1 then
+                    populateMenu("mainMenu", v.id, v.category, "none")
+                end
+            elseif v.id == 16 then
+                if categories.armor then
                     populateMenu("mainMenu", v.id, v.category, "none")
                 end
             elseif v.id == 14 then
@@ -302,8 +306,8 @@ function InitiateMenus(isMotorcycle, vehicleHealth, categories, welcomeLabel)
                 local currentTurboState = GetCurrentTurboState()
                 createMenu(v.category:gsub("%s+", "") .. "Menu", v.category .. " Customisation", "Enable or Disable Turbo")
 
-                populateMenu(v.category:gsub("%s+", "") .. "Menu", 0, "Disable", "$0")
-                populateMenu(v.category:gsub("%s+", "") .. "Menu", 1, "Enable", "$" .. vehicleCustomisationPrices.turbo.price)
+                populateMenu(v.category:gsub("%s+", "") .. "Menu", -1, "Disable", "$0")
+                populateMenu(v.category:gsub("%s+", "") .. "Menu", 0, "Enable", "$" .. vehicleCustomisationPrices.turbo.prices[2])
 
                 updateItem2Text(v.category:gsub("%s+", "") .. "Menu", currentTurboState, "Installed")
 
@@ -578,7 +582,7 @@ function MenuManager(state)
         if currentMenuItem2 ~= "Installed" then
             if isMenuActive("modMenu") then
                 if currentCategory == 18 then --Turbo
-                    if AttemptPurchase("turbo") then
+                    if AttemptPurchase("turbo", currentMenuItemID) then
                         ApplyMod(currentCategory, currentMenuItemID)
                         playSoundEffect("wrench", 0.4)
                         updateItem2Text(currentMenu, currentMenuItemID, "Installed")
