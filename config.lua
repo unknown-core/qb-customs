@@ -5,7 +5,7 @@ Config.RepairMoneyType = 'cash'
 Config.UseRadial = false -- Will use qb-radial menu for entering instead of press E
 Config.allowGovPlateIndex = false -- Setting this to true will allow all vehicles to purchase gov plate index "Blue on White #3" (only for emergency vehicles otherwise)
 
-maxVehiclePerformanceUpgrades = -1 -- Set to 0 to have all the upgrades
+maxVehiclePerformanceUpgrades = 0 -- | All Upgrades: 0 | No Upgrades: -1 | Can be -1 to 4
 vehicleBaseRepairCost = 600
 vehicleRepairCostMultiplier = 1
 
@@ -95,7 +95,7 @@ vehicleTyreSmokeOptions = {
         r = 254,
         g = 254,
         b = 254
-    }, 
+    },
     {
         name = "Black Smoke",
         r = 1,
@@ -235,7 +235,7 @@ vehicleNeonOptions = {
 -- MAIN COMPONENTS
 
 vehicleCustomisation = {
-    {category = "Spoiler", id = 0}, 
+    {category = "Spoiler", id = 0},
     {category = "Front Bumper", id = 1},
     {category = "Rear Bumper", id = 2},
     {category = "Side Skirt", id = 3},
@@ -274,8 +274,8 @@ vehicleCustomisation = {
     {category = "Fuel Tank", id = 45},
     {category = "Window", id = 46},
     {category = "Livery", id = 48},
-    {category = "Horns", id = 14, 
-        
+    {category = "Horns", id = 14,
+
         hornNames = {
             {name = "Truck Horn", id = 0},
             {name = "Cop Horn", id = 1},
@@ -414,7 +414,7 @@ vehicleResprayOptions = {
             {name = "Ice White", id = 111},
             {name = "Frost White", id = 112}
         }
-    }, 
+    },
     {category = "Metallic", id = 1,
         colours = {{name = "Black", id = 0},
             {name = "Carbon Black", id = 147},

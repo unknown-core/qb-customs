@@ -783,13 +783,13 @@ function EnterLocation(override)
         end
     elseif override then canEnter = true end
 
-    if not canEnter then 
+    if not canEnter then
         QBCore.Functions.Notify('You cant do anything here!')
         ExitBennys()
         return
     end
-    if Config.UseRadial then 
-        exports['qb-radialmenu']:RemoveOption(radialMenuItemId) 
+    if Config.UseRadial then
+        exports['qb-radialmenu']:RemoveOption(radialMenuItemId)
         radialMenuItemId = nil
     end
 
@@ -964,11 +964,11 @@ CreateThread(function()
                     CheckForGhostVehicle()
                 elseif CustomsData['location'] == location and CustomsData['spot'] == _name then
                     CustomsData = {}
-                    if Config.UseRadial then 
-                        exports['qb-radialmenu']:RemoveOption(radialMenuItemId) 
+                    if Config.UseRadial then
+                        exports['qb-radialmenu']:RemoveOption(radialMenuItemId)
                         radialMenuItemId = nil
                     end
-                    
+
                     exports['qb-core']:HideText()
                 end
             end)
@@ -1025,10 +1025,10 @@ RegisterNetEvent("qb-customs:client:purchaseFailed", function()
     QBCore.Functions.Notify("Not enough money", "error")
 end)
 
-RegisterNetEvent('qb-customs:client:EnterCustoms', function(override, checkRestrictions)
+RegisterNetEvent('qb-customs:client:EnterCustoms', function(override)
     if not override.coords or not override.heading then override = nil end
     if not IsPedInAnyVehicle(PlayerPedId(), false) or isPlyInBennys or (not next(CustomsData) and not override) then return end
-    if checkRestrictions and next(CustomsData) and not CheckRestrictions(CustomsData.location) then return end
+    if not override and next(CustomsData) and not CheckRestrictions(CustomsData.location) then return end
 
     EnterLocation(override)
 end)

@@ -29,7 +29,7 @@
         horn = true,
         turbo = true,
     },
-    drawtextui = { -- background1 and background2 are also valid options for the background gradiant
+    drawtextui = {
         text = "Bennys Motorworks",
     },
     restrictions = { -- A person must pass ALL the restriction checks. Remove an item below to automatically pass that check.
