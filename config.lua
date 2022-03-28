@@ -1,27 +1,20 @@
-maxVehiclePerformanceUpgrades = 0 -- Set to 0 to have all the upgrades
+Config = Config or {}
+
+Config.MoneyType = 'bank'
+Config.RepairMoneyType = 'cash'
+Config.UseRadial = false -- Will use qb-radial menu for entering instead of press E
+Config.allowGovPlateIndex = false -- Setting this to true will allow all vehicles to purchase gov plate index "Blue on White #3" (only for emergency vehicles otherwise)
+
+maxVehiclePerformanceUpgrades = -1 -- Set to 0 to have all the upgrades
 vehicleBaseRepairCost = 600
 vehicleRepairCostMultiplier = 1
-moneyType = 'bank'
-
--- Location Configs
--- Add locations here
--- Add jobs specific to the garage.
-bennyGarages = {
-    [1] = {coords = vector4(-211.55, -1324.55, 30.90, 319.73135375977), blip = true, useJob = false, job = {"mechanic", "police"}},
-    [2] = {coords = vector4(109.89, 6627.07, 31.78, 221.7938), blip = true, useJob = true, job = {"mechanic"}}
-}
-
---[[ bennyLocations = {
-    vector4(-211.55, -1324.55, 30.90, 319.731)
-} ]]
 
 -- ADJUST PRICING
-
 vehicleCustomisationPrices = {
     cosmetics = {price = 400},
     respray = {price = 1000},
     performance = {prices = {0, 3250, 5500, 10450, 15250, 20500}},
-    turbo = {price = 15000},
+    turbo = {prices = {0, 15000}},
     wheels = {price = 400},
     customwheels = {price = 600},
     wheelsmoke = {price = 400},
@@ -86,7 +79,12 @@ vehicleWheelOptions = {
     {category = "Offroad", id = 4, wheelID = 23},
     {category = "Tuner", id = 5, wheelID = 23},
     {category = "Motorcycle", id = 6, wheelID = 23},
-    {category = "Highend", id = 7, wheelID = 23}
+    {category = "Highend", id = 7, wheelID = 23},
+    {category = "BennysWheel", id = 8, wheelID = 23},
+    {category = "BespokeWheel", id = 9, wheelID = 23},
+    {category = "Dragster", id = 10, wheelID = 23},
+    {category = "Street", id = 11, wheelID = 23},
+    {category = "Rally", id = 12, wheelID = 23},
 }
 
 -- TIRE SMOKE
