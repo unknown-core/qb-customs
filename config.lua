@@ -7,8 +7,6 @@ Config.UseRadial = false -- Will use qb-radial menu for entering instead of pres
 Config.allowGovPlateIndex = false -- Setting this to true will allow all vehicles to purchase gov plate index "Blue on White #3" (only for emergency vehicles otherwise)
 
 maxVehiclePerformanceUpgrades = 0 -- | All Upgrades: 0 | No Upgrades: -1 | Can be -1 to 4
-vehicleBaseRepairCost = 600
-vehicleRepairCostMultiplier = 1
 
 -- ADJUST PRICING
 vehicleCustomisationPrices = {
@@ -26,17 +24,6 @@ vehicleCustomisationPrices = {
     xenoncolours = {price = 500},
     oldlivery = {price = 500},
     plateindex = {price = 1000}
-}
-
--- RESPRAY CATEGORIES
-
-vehicleResprayCategories = {
-    {category = "Primary Colour", id = 0},
-    {category = "Secondary Colour", id = 1},
-    {category = "Pearlescent Colour", id = 2},
-    {category = "Wheel Colour", id = 3},
-    {category = "Dashboard Colour", id = 4},
-    {category = "Interior Colour", id = 5}
 }
 
 -- WINDOW TINTS
