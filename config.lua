@@ -25,17 +25,6 @@ vehicleCustomisationPrices = {
     plateindex = {price = 1000}
 }
 
--- RESPRAY CATEGORIES
-
-vehicleResprayCategories = {
-    {category = "Primary Colour", id = 0},
-    {category = "Secondary Colour", id = 1},
-    {category = "Pearlescent Colour", id = 2},
-    {category = "Wheel Colour", id = 3},
-    {category = "Dashboard Colour", id = 4},
-    {category = "Interior Colour", id = 5}
-}
-
 -- WINDOW TINTS
 
 vehicleWindowTintOptions = {
