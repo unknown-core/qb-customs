@@ -294,47 +294,47 @@ Config.Locations = {
         }
     },
 
-    ['Tunershop'] = {
-        settings = {
-            label = 'Tunershop',
-            welcomeLabel = "Welcome to the Tunershop!",
-            enabled = true,
-        },
-        blip = {
-            label = 'Tunershop',
-            coords = vector3(140.6093, -3030.3933, 7.0409),
-            sprite = 446,
-            scale = 0.65,
-            color = 0,
-            display = 4,
-            enabled = true,
-        },
-        categories = {
-            mods = true,
-            turbo = true,
-            repair = true,
-            respray = true,
-            liveries = true,
-            wheels = true,
-            tint = true,
-            plate = true,
-            extras = true,
-            neons = true,
-            xenons = true,
-            horn = true,
-            cosmetics = true,
-        },
-        drawtextui = {
-            text = "Tunershop",
-            icon = "material-icons",
-            materialIcon = 'construction',
-        },
-        restrictions = { deniedClasses = { 18 } },
-        zones = {
-            { coords = vector3(144.96, -3030.46, 7.06), length = 6.0, width = 4.0, heading = 180.0, minZ = 6.0, maxZ = 10.0 },
-            { coords = vector3(135.92, -3030.5, 7.04), length = 6.0, width = 4.0, heading = 180.0, minZ = 6.0, maxZ = 10.0 },
-        }
-    },
+--     ['Tunershop'] = {
+--         settings = {
+--             label = 'Tunershop',
+--             welcomeLabel = "Welcome to the Tunershop!",
+--             enabled = true,
+--         },
+--         blip = {
+--             label = 'Tunershop',
+--             coords = vector3(140.6093, -3030.3933, 7.0409),
+--             sprite = 446,
+--             scale = 0.65,
+--             color = 0,
+--             display = 4,
+--             enabled = true,
+--         },
+--         categories = {
+--             mods = true,
+--             turbo = true,
+--             repair = true,
+--             respray = true,
+--             liveries = true,
+--             wheels = true,
+--             tint = true,
+--             plate = true,
+--             extras = true,
+--             neons = true,
+--             xenons = true,
+--             horn = true,
+--             cosmetics = true,
+--         },
+--         drawtextui = {
+--             text = "Tunershop",
+--             icon = "material-icons",
+--             materialIcon = 'construction',
+--         },
+--         restrictions = { deniedClasses = { 18 } },
+--         zones = {
+--             { coords = vector3(144.96, -3030.46, 7.06), length = 6.0, width = 4.0, heading = 180.0, minZ = 6.0, maxZ = 10.0 },
+--             { coords = vector3(135.92, -3030.5, 7.04), length = 6.0, width = 4.0, heading = 180.0, minZ = 6.0, maxZ = 10.0 },
+--         }
+--     },
 
     ['MRPD'] = {
         settings = {
